@@ -5,8 +5,9 @@ The repository of GateKeeper, code for our *Computer Networks* Journal paper: [*
 - ⭐ **Please leave a <font color='orange'>STAR</font> if you like this work!** ⭐
 
 ## Dependencies
-- Python 3.7
-- PyTorch 1.4.0
+Ensure the following dependencies are installed:
+- Python 3.7+
+- PyTorch 1.4.0+
 
 ## Dataset
 - [ToN-IoT](https://research.unsw.edu.au/projects/toniot-datasets)
@@ -14,10 +15,28 @@ The repository of GateKeeper, code for our *Computer Networks* Journal paper: [*
 - [CIC-IoT-2022](https://www.unb.ca/cic/datasets/iotdataset-2022.html)
   
 
+## File Structure
+
+- `run_Base.py`: Script to run the Base model.
+- `train.py`: Contains functions for training and testing the model.
+- `Base.py`: Defines the structure of the Base model.
+- `GateKeeper.py`: Defines the structure of the GateKeeper model.
+- `KBS_score.py`: Script for calculating and evaluating attention scores.
+- `utils_base.py`: Utility functions for dataset construction and iterators.
+- `utils_GateKeeper.py`: Utility functions specific to the GateKeeper model.
+
+  
 ## Usage 
 > Adjust **./dataset** to your data
+### (1) Train the Base Model
+> python run_Base.py --test False
+### (2) Get the importance score of each byte 
+> python KBS_score.py
+### (3) Train the GateKeeper
+Copy the results of importance score **(KBS_score.py print)** and assign them to the pos variable in utils_GateKeeper.py.
+> python run_GateKeeper.py --test False
 
-> python run.py
+
 ## Please quote if it helps you
 > @article{cao2024gatekeeper,
   title={GateKeeper: An UltraLite malicious traffic identification method with dual-aspect optimization strategies on IoT gateways},
