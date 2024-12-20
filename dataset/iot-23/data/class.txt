@@ -1,0 +1,10 @@
+Benign
+Mirai
+Torii
+Trojan
+Kenjiro
+Okiru
+Hakai
+IRCBot
+Muhstik
+Hide and Seek
