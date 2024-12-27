@@ -1,6 +1,3 @@
-
-
-# coding: UTF-8
 import os
 import torch
 import numpy as np
@@ -17,28 +14,20 @@ def Dec(content):
 
 def build_dataset(config):
    
-    tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
-    #pos = [i for i in range(50)]
-    #pos = sorted(random.sample(pos,15))
+    tokenizer = lambda x: x.split(' ')  
     def load_dataset(path):
         contents = []
         
-        pos = [i for i in range(config.max_byte_len)]
-        #pos = sorted(random.sample(pos,20))
-        
-        
+        pos = [i for i in range(config.max_byte_len)]        
         with open(path, 'r', encoding='UTF-8') as f:
             for line in tqdm(f):
                 lin = line.strip()
                 if not lin:
                     continue
                 content, label = lin.split('\t')
-
                 token = tokenizer(content)
-      
                 token = [token[i] for i in pos] 
                 contents.append((Dec(token),pos,int(label)))
-                #contents.append((tranHex2Dec(token),int(label)))
                 
         return contents  # [([...], 0), ([...], 1), ...]
 
@@ -107,7 +96,6 @@ def build_iterator(dataset, config):
 
 
 def get_time_dif(start_time):
-    """获取已使用时间"""
     end_time = time.time()
     time_dif = end_time - start_time
     return timedelta(seconds=int(round(time_dif)))
