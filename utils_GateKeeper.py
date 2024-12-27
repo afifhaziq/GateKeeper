@@ -17,7 +17,7 @@ def Dec(content):
 
 def build_dataset(config):
    
-    tokenizer = lambda x: x.split(' ')  # 以空格隔开，word-level
+    tokenizer = lambda x: x.split(' ')  
    
     def load_dataset(path):
         contents = []
@@ -53,7 +53,7 @@ class DatasetIterater(object):
         self.batch_size = batch_size
         self.batches = batches
         self.n_batches = len(batches) // batch_size
-        self.residue = False  # 记录batch数量是否为整数
+        self.residue = False  
         if len(batches) % self.n_batches != 0:
             self.residue = True
         self.index = 0
@@ -107,7 +107,6 @@ def build_iterator(dataset, config):
 
 
 def get_time_dif(start_time):
-    """获取已使用时间"""
     end_time = time.time()
     time_dif = end_time - start_time
     return timedelta(seconds=int(round(time_dif)))
