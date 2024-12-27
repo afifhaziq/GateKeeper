@@ -46,7 +46,14 @@ Copy the results of importance score **(KBS_score.py print)** and assign them to
   year={2024},
   publisher={Elsevier}
 }
-
+> @inproceedings{cao2023mathcal,
+  title={$$\backslash$mathcal $\{$L$\}$$\{$-$\}$ $ ETC: A Lightweight Model Based on Key Bytes Selection for Encrypted Traffic Classification},
+  author={Cao, Jie and Xu, Yuwei and Xiang, Qiao},
+  booktitle={ICC 2023-IEEE International Conference on Communications},
+  pages={2370--2375},
+  year={2023},
+  organization={IEEE}
+}
 
 
 
