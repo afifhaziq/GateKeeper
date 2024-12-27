@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 
 
-
+# Your dataset path
 dataset =  "/media/jie/MyPassport/ExpBackup/11.26-3080/Program/GateKeeper/FNet/dataset/IoT23"
 model_name = "Base"
 x = import_module(model_name)
@@ -14,14 +14,6 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 class_nums =len([x.strip() for x in open(dataset + '/data/class.txt').readlines()])
 
 def toTensor(x):
-    """Convert input string to tensor format required by model
-    
-    Args:
-        x: Input string containing space-separated numbers
-        
-    Returns:
-        tuple: (data tensor, position tensor), both with shape (1, max_byte_len)
-    """
     # Split and convert to integer list
     x = [int(i.strip("\n")) for i in x.split()][:config.max_byte_len]
     
@@ -51,16 +43,16 @@ def eval(traffic,pos):
 
 
 def main():
-    # 初始化每个类别的排名字典
-    f_score = open("attention_score/" + dataset.split("/")[-2] + "KBS_result.csv","w")
+    # Initialize a dictionary to store rankings for each category
+    f_score = open("attention_score/" + dataset.split("/")[-2] + "KBS_result.csv", "w")
     dict_rank = {str(i): torch.zeros(config.max_byte_len).to(device) 
                  for i in range(class_nums)}
     
-    # 读取验证集数据
+    # Read validation dataset
     with open(dataset + "/data/dev.txt", 'r') as fdev:
         samples_dev = fdev.readlines()
 
-    # 统计所有样本的注意力分数
+    # Calculate attention scores for all samples
     count = torch.zeros(config.max_byte_len).to(device)
     for line in samples_dev:
         traffic_str, label = line.strip().split("\t")
@@ -69,23 +61,23 @@ def main():
         dict_rank[label.strip()] += score
         count += score
     
-    # 归一化并转换为列表
+    # Normalize the scores and convert them to a list
     count = (count / torch.max(count)).tolist()
     
-    # 生成排名信息
+    # Generate ranking information
     rank = [(pos, score) for pos, score in enumerate(count)]
     
-    # 写入原始分数
+    # Write raw scores
     ranked_scores = [str(score) for _, score in rank]
     f_score.write(",".join(ranked_scores) + "\n")
     
-    # 按分数排序并写入排名
+    # Sort by scores and write rankings
     rank_sorted = sorted(rank, key=lambda x: x[1], reverse=True)
     ranked_scores = [score for _, score in rank_sorted]
     rank_positions = [str(ranked_scores.index(score) + 1) for _, score in rank]
     f_score.write(",".join(rank_positions) + "\n")
     
-    # 获取最高分数对应的位置
+    # Get positions corresponding to the highest scores
     top_positions = [pos for pos, _ in rank_sorted]
     print(top_positions)
    
