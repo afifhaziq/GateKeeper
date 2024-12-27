@@ -55,6 +55,3 @@ Copy the results of importance score **(KBS_score.py print)** and assign them to
   year={2023},
   organization={IEEE}
 }
-
-
-
