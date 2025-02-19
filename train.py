@@ -5,10 +5,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 from sklearn import metrics
 import time
-from loss.focal_loss import MultiFocalLoss, BinaryFocalLoss
-from loss.dice_loss_nlp import BinaryDSCLoss, MultiDSCLoss
+from loss.focal_loss import MultiFocalLoss
 from utils_GateKeeper import get_time_dif
-
+import wandb
 
 def init_network(model, method='xavier', exclude='embedding', seed=123):
     for name, w in model.named_parameters():
@@ -30,15 +29,23 @@ def init_network(model, method='xavier', exclude='embedding', seed=123):
 def train(config, model, train_iter, dev_iter, test_iter):
         
   
-    
+    print('num class is ', config.num_classes)
 
-    Loss = MultiFocalLoss(num_class=config.num_classes, gamma=2.0, reduction='mean')
+    print(config.train_path.split("\\")[-2])
+    wandb.init(project=config.model_name+"-"+config.train_path.split("\\")[-3])
+    wandb.config = {
+    "learning_rate": config.learning_rate,
+    "epochs": config.num_epochs,
+    "batch_size": config.batch_size
+    }
+
+    Loss = MultiFocalLoss(num_class= config.num_classes, gamma=2.0, reduction='mean')      #config.num_classes
     
     start_time = time.perf_counter()
     model.train()
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
     lambda1 = lambda epoch:np.sin(epoch)/epoch
-    #scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer,lr_lambda = lambda1)
+ #scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer,lr_lambda = lambda1)
 
     total_batch = 0  # 记录进行到多少batch
     dev_best_loss = float('inf')
@@ -47,9 +54,13 @@ def train(config, model, train_iter, dev_iter, test_iter):
     start_time = time.perf_counter()
     for epoch in range(config.num_epochs): 
         print('Epoch [{}/{}]'.format(epoch + 1,config.num_epochs))
-        
+        #print(np.shape(train_iter))
+
         for i,(traffic, pos, labels) in enumerate(train_iter): 
             
+            #print(traffic.size())
+            # print(pos.size())
+            #print(labels.size())
             preds,_ = model(traffic, pos)
             #loss = F.cross_entropy(preds, labels)
             loss = Loss(preds,labels)
@@ -73,8 +84,12 @@ def train(config, model, train_iter, dev_iter, test_iter):
                     
                 else:
                     improve = ''
+
+                wandb.log({"train_loss":  loss.item()})
+                wandb.log({"train_acc":  train_acc})
+                
                 model.train()
-           
+                wandb.watch(model)
                 
                 msg = 'Iter: {0:>6},  Train Loss: {1:>5.2},  Train Acc: {2:>6.2%},  Val Loss: {3:>5.2},  Val Acc: {4:>6.2%}, {5}'
                 print(msg.format(total_batch, loss.item(), train_acc, dev_loss, dev_acc,improve))

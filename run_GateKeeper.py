@@ -10,6 +10,9 @@ from utils_GateKeeper import build_dataset, build_iterator, get_time_dif
 
 parser = argparse.ArgumentParser(description='Encrypted Traffic Classification')
 parser.add_argument('--test', type=bool, default=False, help='Train or Test.')
+parser.add_argument('--data', type=str, required=True, help='input dataset source')
+
+
 
 args = parser.parse_args()
 
@@ -17,7 +20,7 @@ args = parser.parse_args()
 
 def main():
     
-    dataset = "/media/jie/MyPassport/ExpBackup/11.26-3080/Program/GateKeeper/FNet/dataset/IoT23"    
+    dataset = "C:\\Users\\afif\\Documents\\Master\\Code\\benchmark_ntc\\GateKeeper\\dataset\\" + args.data    
     model_name = 'GateKeeper' 
     
     x = import_module(model_name)
@@ -46,12 +49,13 @@ def main():
     model = x.Model(config).to(config.device)
     #init_network(model)
     
-    if args.test == False:
-        print(args.test)
-        print(model.parameters)
-        train(config, model, train_iter, dev_iter, test_iter)
-    else:
-        test(config,model,test_iter)
+    train(config, model, train_iter, dev_iter, test_iter)
+    # if args.test == False:
+    #     print(args.test)
+    #     print(model.parameters)
+    #     train(config, model, train_iter, dev_iter, test_iter)
+    # else:
+    #     test(config,model,test_iter)
     
 if __name__ == '__main__':
     main()

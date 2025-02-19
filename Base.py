@@ -10,17 +10,17 @@ class Config(object):
 
     def __init__(self, dataset):
         self.model_name = 'Base'
-        self.train_path = dataset + '/data/train.txt'                                # Training set
-        self.dev_path = dataset + '/data/dev.txt'                                    # Validation set  
-        self.test_path = dataset + '/data/test.txt'                                  # Test set
+        self.train_path = dataset + '\\data\\train.txt'                                 # Training set
+        self.dev_path = dataset + '\\data\\dev.txt'                                    # Validation set  
+        self.test_path = dataset + '\\data\\test.txt'                                   # Test set
         self.class_list = [x.strip() for x in open(
-            dataset + '/data/class.txt', encoding='utf-8').readlines()]              # Class list
-        self.save_path = dataset + '/saved_dict/' + self.model_name + '.ckpt'        # Model checkpoint
+            dataset + '\\data\\class.txt', encoding='utf-8').readlines()]              # Class list  C:\Users\afif\Documents\Master\Code\benchmark_ntc\GateKeeper\dataset\ISCXVPN2016\data\data\class.txt
+        self.save_path = dataset + '\\saved_dict\\' + self.model_name + '.ckpt'        # Model checkpoint
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')   # Device
         self.learning_rate = 0.00197
         self.require_improvement = 300000                                            # Early stopping if no improvement after this many batches
-        self.num_classes = len(self.class_list)                                      # Number of classes
+        self.num_classes = len(self.class_list)                             #len(self.class_list)                                      # Number of classes
         self.num_epochs = 10                                                         # Number of epochs
         self.batch_size = 163                                                        # Batch size
         

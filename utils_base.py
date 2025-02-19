@@ -8,26 +8,26 @@ from datetime import timedelta
 import random
 
 def Dec(content):
-    new = [int(i.strip("\n")) for i in content]
+    new = [float(i.strip("\n")) for i in content]
     return new
 
 
 def build_dataset(config):
    
-    tokenizer = lambda x: x.split(' ')  
+    tokenizer = lambda x: x.split(' ')                                         # Split the sentence by space
     def load_dataset(path):
         contents = []
         
-        pos = [i for i in range(config.max_byte_len)]        
+        pos = [i for i in range(config.max_byte_len)]                       # Get the position of the word (byte)
         with open(path, 'r', encoding='UTF-8') as f:
             for line in tqdm(f):
-                lin = line.strip()
-                if not lin:
+                lin = line.strip()                                        # Remove the space at the beginning and end of the line                                       
+                if not lin:                                               # If the line is empty, skip to next iterations
                     continue
                 content, label = lin.split('\t')
                 token = tokenizer(content)
-                token = [token[i] for i in pos] 
-                contents.append((Dec(token),pos,int(label)))
+                token = [token[i] for i in pos]                            # assign byte encoding to token based on position
+                contents.append((Dec(token),pos,int(float(label))))     # Append the token, position and label to the contents list
                 
         return contents  # [([...], 0), ([...], 1), ...]
 
@@ -53,9 +53,9 @@ class DatasetIterater(object):
         #pos = torch.LongTensor([_[1] for _ in datas]).to(self.device)
         #y = torch.LongTensor([_[2] for _ in datas]).to(self.device)
         
-        x = torch.LongTensor([_[0] for _ in datas]).to(self.device)
-        pos = torch.LongTensor([_[1] for _ in datas]).to(self.device)
-        y = torch.LongTensor([_[2] for _ in datas]).to(self.device)
+        x = torch.LongTensor([_[0] for _ in datas]).to(self.device)             # Convert the token to tensor and move it to the device
+        pos = torch.LongTensor([_[1] for _ in datas]).to(self.device)           # Convert the position to tensor and move it to the device
+        y = torch.LongTensor([_[2] for _ in datas]).to(self.device)             # Convert the label to tensor and move it to the device
         
         #print(x.shape)
         #x = torch.reshape(x,(x.shape[0],50))
@@ -92,6 +92,7 @@ class DatasetIterater(object):
 
 def build_iterator(dataset, config):
     iter = DatasetIterater(dataset, config.batch_size, config.device)
+    
     return iter
 
 

@@ -4,14 +4,14 @@ import torch.nn.functional as F
 
 
 # Your dataset path
-dataset =  "/media/jie/MyPassport/ExpBackup/11.26-3080/Program/GateKeeper/FNet/dataset/IoT23"
+dataset =  "C:\\Users\\afif\\Documents\\Master\\Code\\benchmark_ntc\\GateKeeper\\dataset\\iot-23"
 model_name = "Base"
 x = import_module(model_name)
 config = x.Config(dataset)
 model = x.Model(config).to(config.device)
 model.load_state_dict(torch.load(config.save_path),strict=False)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
-class_nums =len([x.strip() for x in open(dataset + '/data/class.txt').readlines()])
+class_nums =len([x.strip() for x in open(dataset + '\\data\\class.txt').readlines()])
 
 def toTensor(x):
     # Split and convert to integer list
@@ -44,7 +44,7 @@ def eval(traffic,pos):
 
 def main():
     # Initialize a dictionary to store rankings for each category
-    f_score = open("attention_score/" + dataset.split("/")[-2] + "KBS_result.csv", "w")
+    f_score = open("attention_score\\" + dataset.split("\\")[-2] + "KBS_result.csv", "w")
     dict_rank = {str(i): torch.zeros(config.max_byte_len).to(device) 
                  for i in range(class_nums)}
     

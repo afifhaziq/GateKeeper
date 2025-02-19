@@ -18,7 +18,7 @@ args = parser.parse_args()
 
 def main():
     # Dataset Path
-    dataset = "/media/jie/MyPassport/ExpBackup/11.26-3080/Program/GateKeeper/FNet/dataset/IoT23"
+    dataset = "C:\\Users\\afif\\Documents\\Master\\Code\\benchmark_ntc\\GateKeeper\\dataset\\ISCXVPN2016"
     # Model Name
     model_name = 'Base' 
     
@@ -46,14 +46,17 @@ def main():
     # train
     
     model = x.Model(config).to(config.device)
-    #init_network(model)
     
-    if args.test == False:
-        print(args.test)
-        print(model.parameters)
-        train(config, model, train_iter, dev_iter, test_iter)
-    else:
-        test(config,model,test_iter)
+    print(args.test)
+    print(model.parameters)
+    train(config, model, train_iter, dev_iter, test_iter)
+    
+    # if args.test == False:
+    #     print(args.test)
+    #     print(model.parameters)
+    #     train(config, model, train_iter, dev_iter, test_iter)
+    # else:
+    #     test(config,model,test_iter)
     
 if __name__ == '__main__':
     main()
