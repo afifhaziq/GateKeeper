@@ -26,7 +26,7 @@ def init_network(model, method='xavier', exclude='embedding', seed=123):
 
 
         
-def train(config, model, train_iter, dev_iter, test_iter):
+def train(config, model, train_iter, dev_iter, test_iter, data):
         
   
     print('num class is ', config.num_classes)
@@ -51,7 +51,7 @@ def train(config, model, train_iter, dev_iter, test_iter):
     dev_best_loss = float('inf')
     last_improve = 0  # 记录上次验证集loss下降的batch数
     flag = False  # 记录是否很久没有效果提升
-    start_time = time.perf_counter()
+    
     for epoch in range(config.num_epochs): 
         print('Epoch [{}/{}]'.format(epoch + 1,config.num_epochs))
         #print(np.shape(train_iter))
@@ -104,28 +104,44 @@ def train(config, model, train_iter, dev_iter, test_iter):
         if flag:
             break
     end_time = time.perf_counter()
-    print(end_time-start_time)
-    test(config, model, test_iter)
+    time_dif = end_time - start_time
+    time_dif = time_dif/60
+    average_time = time_dif/config.num_epochs
+    print(f"Training Time : {time_dif:.2f} Minutes")  # Show 6 decimal places
+    print(f"Average Training time (epoch): {average_time:.2f} Minutes")
+    wandb.log({"training_time":  float(time_dif)})
+    wandb.log({"average_training_time":  float(average_time)})
+    
+    test(config, model, test_iter, data)
 
 
 
-def test(config, model, test_iter):
+def test(config, model, test_iter, data):
     # test
+
+    wandb.init(project=config.model_name+"-"+config.train_path.split("\\")[-3]+"-test")
+    wandb.config = {
+    "learning_rate": config.learning_rate,
+    "epochs": config.num_epochs,
+    "batch_size": config.batch_size
+    }
+
     model.load_state_dict(torch.load(config.save_path))
     model.eval()
+    wandb.watch(model, log_graph=True)
     start_time = time.time()
-    test_acc, test_loss, test_report, test_confusion = evaluate(config, model, test_iter, test=True)
+    test_acc, test_loss, test_report, test_confusion = evaluate(config, model, test_iter, test=True, data=data)
+    wandb.log({"test_loss":  test_loss})
+    wandb.log({"test_acc":  test_acc})
     msg = 'Test Loss: {0:>5.2},  Test Acc: {1:>6.2%}'
     print(msg.format(test_loss, test_acc))
     print("Precision, Recall and F1-Score...")
     print(test_report)
     print("Confusion Matrix...")
     print(test_confusion)
-    time_dif = get_time_dif(start_time)
-    #print("Time usage:", time_dif)
+    
 
-
-def evaluate(config, model, data_iter, test=False):
+def evaluate(config, model, data_iter, test=False, data=None):
     model.eval()
     start_time = time.time()
     loss_total = 0
@@ -149,9 +165,15 @@ def evaluate(config, model, data_iter, test=False):
             labels_all = np.append(labels_all, labels)
             predict_all = np.append(predict_all, predic)
 
-    time_dif = get_time_dif(start_time)
+    
+
     if test == True:
-        print("####", time_dif)
+        time_dif, average_time = get_time_dif(start_time, test=1, data=data)
+        print(f"Testing Time usage: {time_dif:.10f} seconds")  
+        print(f"Average Testing time: {average_time:.10f} seconds")
+        wandb.log({"test_time":  float(time_dif)})
+        wandb.log({"average_time":  float(average_time)})
+
     acc = metrics.accuracy_score(labels_all, predict_all)
     if test:
         report = metrics.classification_report(labels_all, predict_all, target_names=config.class_list, digits=4)

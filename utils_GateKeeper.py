@@ -103,10 +103,45 @@ def build_iterator(dataset, config):
     return iter
 
 
-def get_time_dif(start_time):
+def get_time_dif(start_time, test = 5, data=None):
     end_time = time.time()
     time_dif = end_time - start_time
-    return timedelta(seconds=int(round(time_dif)))
+    
+    # preprocess time
+    if test == 0:
+
+        if data == 'MALAYAGT':
+            average_time = time_dif / 1046795
+        
+        elif data == 'ISCXVPN2016':
+            average_time = time_dif / 1090302
+
+        return time_dif, average_time
+    
+    # Testing Time
+    elif test == 1:
+
+        if data == 'MALAYAGT':
+            average_time = time_dif / 104679
+        
+        elif data == 'ISCXVPN2016':
+            average_time = time_dif / 109031
+
+        return time_dif, average_time
+    
+    # Training time
+    elif test == 2:
+
+        if data == 'MALAYAGT':
+            average_time = time_dif / 837436
+        
+        elif data == 'ISCXVPN2016':
+            average_time = time_dif / 872241
+
+        return time_dif, average_time
+    
+    else:
+        return timedelta(seconds=int(round(time_dif)))
 
 if __name__ == '__main__':
     test_list = ["ff" for i in range(50)]
